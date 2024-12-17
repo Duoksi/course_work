@@ -43,8 +43,12 @@ public class UserService {
         return userRepo.findById(id);
     }
 
-    public boolean checkPassword(String rawPassword, String encodedPassword) {
-        return passwordEncoder.matches(rawPassword, encodedPassword);
+    public boolean checkPassword(String rawPassword, User user) {
+        return passwordEncoder.matches(rawPassword, user.getPassword());
+    }
+
+    public boolean existsByUsername(String username) {
+        return userRepo.findByUsername(username).isPresent();
     }
 }
 

@@ -1,0 +1,78 @@
+/* Общие настройки */
+.root {
+    -fx-background-color: #f4f4f9; /* Светлый фон панели */
+    -fx-font-family: "Arial", sans-serif;
+}
+
+/* Заголовок */
+.label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+    -fx-padding: 10;
+}
+
+/* Кнопки */
+.button {
+    -fx-background-color: #4CAF50; /* Зеленый фон */
+    -fx-text-fill: white;          /* Белый текст */
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.button:hover {
+    -fx-background-color: #45a049; /* Темно-зеленый при наведении */
+}
+
+.button:focused {
+    -fx-border-color: #3178C6; /* Синяя рамка при фокусе */
+    -fx-border-width: 2;
+}
+
+/* Панель кнопок */
+.hbox {
+    -fx-spacing: 10;
+    -fx-padding: 10;
+    -fx-alignment: center-left;
+}
+
+/* Таблицы */
+.table-view {
+    -fx-border-color: #dddddd;
+    -fx-border-width: 1;
+    -fx-background-color: white;
+    -fx-table-cell-border-color: #f0f0f0;
+    -fx-padding: 10;
+}
+
+.table-column-header {
+    -fx-background-color: #3178C6;
+    -fx-text-fill: white;
+}
+
+/* Кнопка выхода */
+.exit-button {
+    -fx-background-color: #FF6347; /* Красный */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.exit-button:hover {
+    -fx-background-color: #e55342; /* Темно-красный при наведении */
+}
+
+#aboutAuthorButton {
+    -fx-background-color: #3c91e6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+#aboutAuthorButton:hover {
+    -fx-background-color: #1d70b8;
+}

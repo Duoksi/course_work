@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<BorderPane xmlns:fx="http://javafx.com/javafx" xmlns="http://javafx.com/javafx"
+            fx:controller="com.example.course_client.controller.AdminController"
+            stylesheets="@AdminPanel.css">
+
+    <!-- Верхняя панель с кнопками навигации -->
+    <top>
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <MenuButton text="Пользователи">
+                    <items>
+                        <MenuItem text="Просмотр пользователей" onAction="#showUsersTable"/>
+                        <MenuItem text="Создание пользователя" onAction="#showCreateUserForm"/>
+                    </items>
+                </MenuButton>
+                <Button text="Парковки" onAction="#showParkingSpotsTable"/>
+                <Button text="Бронирования" onAction="#showBookingsTable"/>
+                <Button text="Транзакции" onAction="#showTransactionsTable"/>
+                <Button text="Статистика" onAction="#showStatistics" />
+                <Button text="Об авторе" onAction="#showAboutAuthor" alignment="CENTER_RIGHT" style="-fx-alignment: center-right;" />
+            </HBox>
+
+            <HBox spacing="5" alignment="CENTER_LEFT">
+                <Label text="Поиск пользователя:"/>
+                <TextField fx:id="searchUserField" promptText="Введите username"/>
+                <Button text="Искать" onAction="#searchUserByUsername"/>
+            </HBox>
+
+            <HBox spacing="5" alignment="CENTER_LEFT">
+                <Label text="Поиск бронирований и транзакций:"/>
+                <TextField fx:id="searchIdField" promptText="Введите ID пользователя"/>
+                <Button text="Искать бронирования" onAction="#searchBookingsByUserId"/>
+                <Button text="Искать транзакции" onAction="#searchTransactionsByUserId"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- Центр с таблицами -->
+    <center>
+        <StackPane fx:id="tablePane" style="-fx-padding: 10;">
+            <!-- Таблица пользователей -->
+            <TableView fx:id="usersTable" visible="false">
+                <columns>
+                    <TableColumn text="ID" fx:id="userIdColumn"/>
+                    <TableColumn text="Имя" fx:id="usernameColumn"/>
+                    <TableColumn text="Пароль" fx:id="passwordColumn"/>
+                    <TableColumn text="Email" fx:id="emailColumn"/>
+                    <TableColumn text="Тип пользователя" fx:id="userTypeColumn"/>
+                </columns>
+            </TableView>
+
+            <!-- Форма создания пользователя -->
+            <VBox fx:id="createUserPane" spacing="10" visible="false" managed="false">
+                <Label text="Создание нового пользователя" style="-fx-font-weight: bold;"/>
+                <HBox spacing="10">
+                    <Label text="Имя пользователя:"/>
+                    <TextField fx:id="usernameField"/>
+                </HBox>
+                <HBox spacing="10">
+                    <Label text="Email:"/>
+                    <TextField fx:id="emailField"/>
+                </HBox>
+                <HBox spacing="10">
+                    <Label text="Пароль:"/>
+                    <PasswordField fx:id="passwordField"/>
+                </HBox>
+                <HBox spacing="10">
+                    <Label text="Роль:"/>
+                    <ChoiceBox fx:id="roleChoiceBox">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="ADMIN"/>
+                                <String fx:value="CUSTOMER"/>
+                            </FXCollections>
+                        </items>
+                    </ChoiceBox>
+                </HBox>
+                <Button text="Создать пользователя" onAction="#createUser"/>
+            </VBox>
+
+            <!-- Таблица парковок -->
+            <TableView fx:id="parkingSpotsTable" visible="false">
+                <columns>
+                    <TableColumn text="ID" fx:id="parkingSpotIdColumn"/>
+                    <TableColumn text="Номер места" fx:id="spotNumberColumn"/>
+                    <TableColumn text="ТЦ" fx:id="tcNameColumn"/>
+                </columns>
+            </TableView>
+
+            <!-- Таблица бронирования -->
+            <TableView fx:id="bookingsTable" visible="false">
+                <columns>
+                    <TableColumn text="ID" fx:id="bookingIdColumn"/>
+                    <TableColumn text="ID Пользователя" fx:id="bookingUserIdColumn"/>
+                    <TableColumn text="Место" fx:id="bookingSpotNumberColumn"/>
+                    <TableColumn text="ТЦ" fx:id="bookingTcNameColumn"/>
+                    <TableColumn text="Создано" fx:id="bookingTimeColumn"/>
+                    <TableColumn text="Начало" fx:id="startTimeColumn"/>
+                    <TableColumn text="Конец" fx:id="endTimeColumn"/>
+                    <TableColumn text="Статус" fx:id="bookingStatusColumn"/>
+                </columns>
+            </TableView>
+
+            <!-- Таблица транзакций -->
+            <TableView fx:id="transactionsTable" visible="false">
+                <columns>
+                    <TableColumn text="ID" fx:id="transactionIdColumn"/>
+                    <TableColumn text="ID Бронирования" fx:id="transactionBookingIdColumn"/>
+                    <TableColumn text="ID Пользователя" fx:id="transactionUserIdColumn"/>
+                    <TableColumn text="Стоимость" fx:id="amountColumn"/>
+                    <TableColumn text="Создано" fx:id="transactionTimeColumn"/>
+                    <TableColumn text="Статус" fx:id="transactionStatusColumn"/>
+                </columns>
+            </TableView>
+        </StackPane>
+    </center>
+
+    <!-- Нижняя панель -->
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" style="-fx-padding: 10;">
+            <Button text="Выйти на карту" onAction="#switchToMain" styleClass="exit-button"/>
+        </HBox>
+    </bottom>
+</BorderPane>

@@ -2,7 +2,6 @@ package org.example.course_server.service;
 
 import org.example.course_server.entity.Booking;
 import org.example.course_server.entity.User;
-import org.example.course_server.entity.ParkingSpot;
 import org.example.course_server.repository.BookingRepo;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +25,7 @@ public class BookingService {
         booking.setTcName(tcName);
         booking.setStartTime(startTime);
         booking.setEndTime(endTime);
-        booking.setStatus("Забронировано");
+        booking.setStatus("RESERVED");
         return bookingRepo.save(booking);
     }
 

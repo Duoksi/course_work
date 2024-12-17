@@ -1,7 +1,6 @@
 package org.example.course_server.service;
 
 import org.example.course_server.entity.Transaction;
-import org.example.course_server.entity.Booking;
 import org.example.course_server.entity.User;
 import org.example.course_server.repository.TransactionRepo;
 import org.springframework.stereotype.Service;

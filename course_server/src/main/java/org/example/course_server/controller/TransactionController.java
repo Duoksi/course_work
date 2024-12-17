@@ -1,6 +1,7 @@
 package org.example.course_server.controller;
 
 import org.example.course_server.entity.Booking;
+import org.example.course_server.entity.ParkingSpot;
 import org.example.course_server.entity.Transaction;
 import org.example.course_server.entity.User;
 import org.example.course_server.service.BookingService;
@@ -47,6 +48,12 @@ public class TransactionController {
         return ResponseEntity.ok(transaction);  // Возвращаем созданную транзакцию с ID
     }
 
+    @GetMapping
+    public ResponseEntity<List<Transaction>> getAllTransactions() {
+        List<Transaction> transactions = transactionRepo.findAll();
+        return ResponseEntity.ok(transactions);
+    }
+
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Transaction>> getTransactionsByUser(@PathVariable Long userId) {
         List<Transaction> transactions = transactionService.findByUserId(userId);
@@ -57,6 +64,25 @@ public class TransactionController {
     public ResponseEntity<Transaction> getTransactionById(@PathVariable Long id) {
         Optional<Transaction> transaction = transactionService.findById(id);
         return transaction.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<?> updateTransactionStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+        String newStatus = body.get("newStatus");
+
+        Optional<Transaction> optionalTransaction = transactionService.findById(id);
+
+        if (optionalTransaction.isEmpty()) {
+            return ResponseEntity.badRequest().body("Транзакция не найдена.");
+        }
+
+        Transaction transaction = optionalTransaction.get();
+        transaction.setStatus(newStatus);
+        transactionRepo.save(transaction); // Сохраняем изменения
+
+        return ResponseEntity.ok("Статус транзакции обновлён на " + newStatus);
     }
 
     @PutMapping("/update-booking")
