@@ -7,6 +7,10 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * Сущность для бронирования парковочного места.
+ * Хранит информацию о бронировании, пользователе и времени.
+ */
 @Getter
 @Setter
 @Entity
@@ -16,23 +20,44 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Пользователь, который сделал бронирование.
+     */
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private int spotNumber;  // Номер места
+    /**
+     * Номер парковочного места.
+     */
+    private int spotNumber;
 
-    private String tcName;  // Название ТЦ
+    /**
+     * Название торгового центра (ТЦ), где находится парковочное место.
+     */
+    private String tcName;
 
+    /**
+     * Время создания бронирования.
+     */
     @Column(columnDefinition = "TIMESTAMP(0)")
     @CreationTimestamp
     private LocalDateTime bookingTime;
 
+    /**
+     * Время начала бронирования.
+     */
     @Column(columnDefinition = "TIMESTAMP(0)")
     private LocalDateTime startTime;
 
+    /**
+     * Время окончания бронирования.
+     */
     @Column(columnDefinition = "TIMESTAMP(0)")
     private LocalDateTime endTime;
 
+    /**
+     * Статус бронирования.
+     */
     private String status;
 }

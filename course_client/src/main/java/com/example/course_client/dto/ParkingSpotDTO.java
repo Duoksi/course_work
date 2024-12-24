@@ -1,12 +1,24 @@
 package com.example.course_client.dto;
 
-
+/**
+ * DTO для представления информации о парковочном месте.
+ */
 public class ParkingSpotDTO {
+    /**
+     * Уникальный идентификатор парковочного места.
+     */
     private Long id;
+
+    /**
+     * Номер парковочного места.
+     */
     private int spotNumber;
+
+    /**
+     * Название торгового центра, к которому относится место.
+     */
     private String tcName;
 
-    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }
@@ -30,6 +42,4 @@ public class ParkingSpotDTO {
     public void setTcName(String tcName) {
         this.tcName = tcName;
     }
-
 }
-

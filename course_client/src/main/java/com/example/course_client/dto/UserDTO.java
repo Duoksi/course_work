@@ -1,14 +1,47 @@
 package com.example.course_client.dto;
 
+/**
+ * DTO для представления информации о пользователе.
+ */
 public class UserDTO {
+    /**
+     * Уникальный идентификатор пользователя.
+     */
     private Long id;
+
+    /**
+     * Имя пользователя.
+     */
     private String username;
+
+    /**
+     * Пароль пользователя.
+     */
     private String password;
+
+    /**
+     * Электронная почта пользователя.
+     */
     private String email;
+
+    /**
+     * Тип пользователя (например, ADMIN, CUSTOMER).
+     */
     private String userType;
 
+    /**
+     * Конструктор по умолчанию.
+     */
     public UserDTO() {}
 
+    /**
+     * Конструктор с параметрами.
+     *
+     * @param username  Имя пользователя.
+     * @param email     Электронная почта пользователя.
+     * @param password  Пароль пользователя.
+     * @param userType  Тип пользователя.
+     */
     public UserDTO(String username, String email, String password, String userType) {
         this.username = username;
         this.email = email;
@@ -16,7 +49,6 @@ public class UserDTO {
         this.userType = userType;
     }
 
-    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }

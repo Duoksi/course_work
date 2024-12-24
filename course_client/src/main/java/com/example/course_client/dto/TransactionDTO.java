@@ -1,34 +1,68 @@
 package com.example.course_client.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 
 import java.util.Map;
 
+/**
+ * DTO для представления информации о транзакции.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TransactionDTO {
+    /**
+     * Уникальный идентификатор транзакции.
+     */
     private Long id;
+
+    /**
+     * Идентификатор бронирования, связанного с транзакцией.
+     */
     private Long bookingId;
+
+    /**
+     * Идентификатор пользователя, связанного с транзакцией.
+     */
     private Long userId;
+
+    /**
+     * Сумма транзакции.
+     */
     private int amount;
+
+    /**
+     * Время создания транзакции.
+     */
     private String transactionTime;
+
+    /**
+     * Статус транзакции.
+     */
     private String status;
 
-    @JsonProperty("user") // Обработка вложенного объекта
+    /**
+     * Обрабатывает вложенный объект пользователя для извлечения идентификатора.
+     *
+     * @param user объект пользователя.
+     */
+    @JsonProperty("user")
     public void unpackUserId(Map<String, Object> user) {
         if (user != null && user.containsKey("id")) {
             this.userId = ((Number) user.get("id")).longValue();
         }
     }
 
-    @JsonProperty("booking") // Обработка вложенного объекта
+    /**
+     * Обрабатывает вложенный объект бронирования для извлечения идентификатора.
+     *
+     * @param booking объект бронирования.
+     */
+    @JsonProperty("booking")
     public void unpackBookingId(Map<String, Object> booking) {
         if (booking != null && booking.containsKey("id")) {
             this.bookingId = ((Number) booking.get("id")).longValue();
         }
     }
 
-    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }

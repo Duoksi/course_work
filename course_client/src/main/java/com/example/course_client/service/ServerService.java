@@ -10,6 +10,9 @@ import com.fasterxml.jackson.databind.*;
 import javafx.scene.control.Alert;
 import org.json.JSONObject;
 
+/**
+ * Класс для взаимодействия с сервером через HTTP.
+ */
 public class ServerService {
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
@@ -37,6 +40,16 @@ public class ServerService {
         this.id = id;
     }
 
+    /**
+     * Отправляет запрос на бронирование парковочного места.
+     *
+     * @param userId       ID пользователя.
+     * @param spotNumber   Номер парковочного места.
+     * @param tcName       Название торгового центра.
+     * @param startDateTime Дата и время начала бронирования.
+     * @param endDateTime  Дата и время окончания бронирования.
+     * @return ID созданного бронирования или {@code null}, если запрос не удался.
+     */
     public Long sendBookingRequest(Long userId, int spotNumber, String tcName, String startDateTime, String endDateTime) {
         try {
             String jsonBody = String.format(
@@ -67,6 +80,13 @@ public class ServerService {
         return null;
     }
 
+    /**
+     * Создаёт новую транзакцию.
+     *
+     * @param userId ID пользователя.
+     * @param amount Сумма транзакции.
+     * @return ID созданной транзакции или {@code null}, если запрос не удался.
+     */
     public Long createTransaction(Long userId, int amount) {
         try {
             String jsonBody = String.format(
@@ -97,6 +117,13 @@ public class ServerService {
         return null;
     }
 
+    /**
+     * Обновляет статус транзакции.
+     *
+     * @param transactionId ID транзакции.
+     * @param newStatus     Новый статус транзакции.
+     * @return {@code true}, если запрос выполнен успешно; иначе {@code false}.
+     */
     public boolean updateTransactionStatus(Long transactionId, String newStatus) {
         try {
             Map<String, String> body = Map.of("newStatus", newStatus);
@@ -117,6 +144,12 @@ public class ServerService {
         }
     }
 
+    /**
+     * Обновляет ID бронирования, связанного с транзакцией.
+     *
+     * @param transactionId ID транзакции.
+     * @param bookingId     Новый ID бронирования.
+     */
     public void updateBookingId(Long transactionId, Long bookingId) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -136,6 +169,13 @@ public class ServerService {
         }
     }
 
+    /**
+     * Выполняет вход в систему с указанными учетными данными.
+     *
+     * @param username Имя пользователя.
+     * @param password Пароль.
+     * @return Тип пользователя, если вход успешен, или {@code null}, если произошла ошибка.
+     */
     public String login(String username, String password) {
         try {
             String jsonBody = String.format("{\"username\": \"%s\", \"password\": \"%s\"}", username, password);
@@ -165,6 +205,14 @@ public class ServerService {
         return null;
     }
 
+    /**
+     * Регистрирует нового пользователя.
+     *
+     * @param username Имя пользователя.
+     * @param email    Электронная почта.
+     * @param password Пароль.
+     * @return {@code true}, если регистрация успешна; иначе {@code false}.
+     */
     public boolean register(String username, String email,String password) {
         try {
             String jsonBody = String.format("{\"username\":\"%s\", \"email\":\"%s\", \"password\":\"%s\"}", username, email, password);
@@ -183,6 +231,12 @@ public class ServerService {
         }
     }
 
+    /**
+     * Создаёт нового пользователя с указанными данными.
+     *
+     * @param user DTO пользователя с необходимыми данными.
+     * @return {@code true}, если пользователь успешно создан; иначе {@code false}.
+     */
     public boolean createUser(UserDTO user) {
         try {
             String json = objectMapper.writeValueAsString(user);
@@ -201,6 +255,12 @@ public class ServerService {
         }
     }
 
+    /**
+     * Удаляет пользователя по его ID.
+     *
+     * @param userId ID пользователя.
+     * @return {@code true}, если удаление прошло успешно; иначе {@code false}.
+     */
     public boolean deleteUser(Long userId) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -217,6 +277,13 @@ public class ServerService {
         }
     }
 
+    /**
+     * Обновляет статус бронирования.
+     *
+     * @param bookingId ID бронирования.
+     * @param status    Новый статус.
+     * @return {@code true}, если обновление прошло успешно; иначе {@code false}.
+     */
     public boolean updateBookingStatus(Long bookingId, String status) {
         try {
             Map<String, String> body = Map.of("newStatus", status);
@@ -237,6 +304,12 @@ public class ServerService {
         }
     }
 
+    /**
+     * Ищет пользователей по имени.
+     *
+     * @param username Имя пользователя.
+     * @return Список пользователей, соответствующих имени, или пустой список, если ничего не найдено.
+     */
     public List<UserDTO> findUserByUsername(String username) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -255,6 +328,12 @@ public class ServerService {
         return Collections.emptyList();
     }
 
+    /**
+     * Ищет бронирования, связанные с указанным ID пользователя.
+     *
+     * @param userId ID пользователя.
+     * @return Список бронирований или пустой список, если ничего не найдено.
+     */
     public List<BookingDTO> findBookingsByUserId(Long userId) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -273,6 +352,12 @@ public class ServerService {
         return Collections.emptyList();
     }
 
+    /**
+     * Ищет транзакции, связанные с указанным ID пользователя.
+     *
+     * @param userId ID пользователя.
+     * @return Список транзакций или пустой список, если ничего не найдено.
+     */
     public List<TransactionDTO> findTransactionsByUserId(Long userId) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -291,6 +376,13 @@ public class ServerService {
         return Collections.emptyList();
     }
 
+    /**
+     * Получает статус парковочного места в указанном ТЦ.
+     *
+     * @param tcName     Название торгового центра.
+     * @param spotNumber Номер парковочного места.
+     * @return Текущий статус парковочного места, или "AVAILABLE", если оно свободно.
+     */
     public String getSpotStatus(String tcName, int spotNumber) {
         List<BookingDTO> bookings = fetchTodayBookings();
 
@@ -307,6 +399,11 @@ public class ServerService {
         return "AVAILABLE";
     }
 
+    /**
+     * Получает список бронирований на текущий день.
+     *
+     * @return Список бронирований или пустой список, если ничего не найдено.
+     */
     public List<BookingDTO> fetchTodayBookings() {
         try {
             // Сначала обновляем статусы на сервере
@@ -333,6 +430,11 @@ public class ServerService {
         }
     }
 
+    /**
+     * Отображает сообщение об ошибке в графическом интерфейсе.
+     *
+     * @param message Текст сообщения об ошибке.
+     */
     public void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Ошибка");

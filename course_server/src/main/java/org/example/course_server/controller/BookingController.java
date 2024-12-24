@@ -1,24 +1,18 @@
-
 package org.example.course_server.controller;
 
-import org.example.course_server.entity.Booking;
-import org.example.course_server.entity.Transaction;
-import org.example.course_server.entity.User;
-import org.example.course_server.entity.ParkingSpot;
+import org.example.course_server.entity.*;
 import org.example.course_server.repository.BookingRepo;
-import org.example.course_server.service.BookingService;
-import org.example.course_server.service.JwtService;
-import org.example.course_server.service.UserService;
-import org.example.course_server.service.ParkingSpotService;
+import org.example.course_server.service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Book;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
+/**
+ * Контроллер для работы с сущностью бронирования.
+ * Обрабатывает запросы, связанные с созданием, просмотром и обновлением бронирований.
+ */
 @RestController
 @RequestMapping("/api/bookings")
 public class BookingController {
@@ -29,6 +23,15 @@ public class BookingController {
     private final ParkingSpotService parkingSpotService;
     private final JwtService jwtService;
 
+    /**
+     * Конструктор для внедрения зависимостей.
+     *
+     * @param bookingService     сервис для работы с бронированиями.
+     * @param bookingRepo        репозиторий для работы с хранилищем бронирований.
+     * @param userService        сервис для работы с пользователями.
+     * @param parkingSpotService сервис для работы с парковочными местами.
+     * @param jwtService         сервис для работы с JWT токенами.
+     */
     public BookingController(
             BookingService bookingService,
             BookingRepo bookingRepo,
@@ -42,6 +45,13 @@ public class BookingController {
         this.jwtService = jwtService;
     }
 
+    /**
+     * Создаёт новое бронирование.
+     *
+     * @param token       JWT токен для авторизации.
+     * @param bookingData данные бронирования (userId, spotNumber, tcName, startTime, endTime).
+     * @return {@link ResponseEntity} с созданным бронированием или сообщением об ошибке.
+     */
     @PostMapping
     public ResponseEntity<?> createBooking(@RequestHeader("Authorization") String token,
                                             @RequestBody Map<String, Object> bookingData) {
@@ -80,12 +90,23 @@ public class BookingController {
         return ResponseEntity.ok(booking);
     }
 
+    /**
+     * Получает список всех бронирований.
+     *
+     * @return {@link ResponseEntity} с перечнем бронирований.
+     */
     @GetMapping
     public ResponseEntity<List<Booking>> getAllBookings() {
         List<Booking> bookings = bookingService.findAll();
         return ResponseEntity.ok(bookings);
     }
 
+    /**
+     * Получает список бронирований конкретного пользователя.
+     *
+     * @param userId идентификатор пользователя.
+     * @return {@link ResponseEntity} с перечнем бронирований или пустым списком.
+     */
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Booking>> getBookingsByUser(@PathVariable Long userId) {
         Optional<User> userOptional = userService.findById(userId);
@@ -97,6 +118,13 @@ public class BookingController {
         return ResponseEntity.ok(bookings);
     }
 
+    /**
+     * Обновляет статус бронирования.
+     *
+     * @param id   идентификатор бронирования.
+     * @param body тело запроса с новым статусом.
+     * @return {@link ResponseEntity} с подтверждением обновления или сообщением об ошибке.
+     */
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateBookingStatus(
             @PathVariable Long id,
@@ -116,6 +144,18 @@ public class BookingController {
         return ResponseEntity.ok("Статус бронирования обновлён на " + newStatus);
     }
 
+    /**
+     * Обновляет статусы всех актуальных бронирований.
+     *
+     * <p>Статусы:
+     * <ul>
+     *     <li>RESERVED — если бронирование ещё не началось.</li>
+     *     <li>IN_PROGRESS — если бронирование активно.</li>
+     *     <li>COMPLETED — если бронирование завершено.</li>
+     * </ul>
+     *
+     * @return {@link ResponseEntity} с подтверждением обновления статусов.
+     */
     @PutMapping("/update-statuses")
     public ResponseEntity<?> updateBookingStatuses() {
         List<Booking> bookings = bookingRepo.findTodayBookings();
@@ -134,10 +174,14 @@ public class BookingController {
         return ResponseEntity.ok("Statuses updated.");
     }
 
+    /**
+     * Получает список бронирований на текущий день.
+     *
+     * @return {@link ResponseEntity} с перечнем бронирований за сегодня.
+     */
     @GetMapping("/today")
     public ResponseEntity<List<Booking>> getTodayBookings() {
         List<Booking> todayBookings = bookingRepo.findTodayBookings();
         return ResponseEntity.ok(todayBookings);
     }
-
 }

@@ -1,20 +1,18 @@
 package org.example.course_server.controller;
 
-import org.example.course_server.entity.Booking;
-import org.example.course_server.entity.ParkingSpot;
-import org.example.course_server.entity.User;
-import org.example.course_server.repository.BookingRepo;
-import org.example.course_server.repository.ParkingSpotRepo;
+import org.example.course_server.entity.*;
+import org.example.course_server.repository.*;
 import org.example.course_server.service.ParkingSpotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
+/**
+ * Контроллер для работы с парковочными местами.
+ * Обрабатывает запросы, связанные с созданием, просмотром и получением статистики парковочных мест.
+ */
 @RestController
 @RequestMapping("/api/parking-spots")
 public class ParkingSpotController {
@@ -28,25 +26,53 @@ public class ParkingSpotController {
     @Autowired
     private BookingRepo bookingRepo;
 
-
+    /**
+     * Регистрирует новое парковочное место.
+     *
+     * @param parkingSpot объект {@link ParkingSpot}, представляющий данные нового парковочного места.
+     * @return {@link ResponseEntity} с зарегистрированным парковочным местом.
+     */
     @PostMapping
     public ResponseEntity<ParkingSpot> registerParkingSpot(@RequestBody ParkingSpot parkingSpot) {
         ParkingSpot createdParkingSpot = parkingSpotService.registerParkingSpot(parkingSpot);
         return ResponseEntity.ok(createdParkingSpot);
     }
 
+    /**
+     * Получает список всех парковочных мест.
+     *
+     * @return {@link ResponseEntity} с перечнем всех парковочных мест.
+     */
     @GetMapping
     public ResponseEntity<List<ParkingSpot>> getAllParkingSpots() {
         List<ParkingSpot> spots = parkingSpotService.findAll();
         return ResponseEntity.ok(spots);
     }
 
+    /**
+     * Получает парковочное место по его идентификатору.
+     *
+     * @param id идентификатор парковочного места.
+     * @return {@link ResponseEntity} с данными парковочного места или статусом 404, если место не найдено.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ParkingSpot> getParkingSpotById(@PathVariable Long id) {
         Optional<ParkingSpot> spot = parkingSpotService.findById(id);
         return spot.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Получает статистику парковочных мест.
+     *
+     * <p>Статистика включает:
+     * <ul>
+     *     <li>Количество занятых мест для каждого торгового центра (ТЦ).</li>
+     *     <li>Общее количество мест для каждого ТЦ.</li>
+     * </ul>
+     *
+     * @return {@link ResponseEntity} с картой, где ключ — название ТЦ, а значение — массив из двух элементов:
+     *         <code>[занятые места, всего мест]</code>.
+     */
     @GetMapping("/parking-statistics")
     public ResponseEntity<Map<String, int[]>> getParkingStatistics() {
         List<ParkingSpot> spots = parkingSpotRepo.findAll();
@@ -73,4 +99,3 @@ public class ParkingSpotController {
         return ResponseEntity.ok(statistics);
     }
 }
-

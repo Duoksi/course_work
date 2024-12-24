@@ -15,39 +15,51 @@ import java.net.URI;
 import java.net.http.*;
 import java.util.*;
 
+/**
+ * Контроллер для админ-панели.
+ * Управляет отображением и взаимодействием с данными, такими как пользователи, парковочные места, бронирования и транзакции.
+ * Обеспечивает взаимодействие с сервером для получения и обновления данных.
+ */
 public class AdminController {
 
-    private final String SERVER_URL = "http://localhost:8080";
-    private final ServerService serverService = new ServerService();
-    private final HttpClient httpClient = HttpClient.newHttpClient();
-    private final String token = serverService.getToken();
-    private MainController mainController;
+    private final String SERVER_URL = "http://localhost:8080"; // URL сервера
+    private final ServerService serverService = new ServerService(); // Сервис для работы с сервером
+    private final HttpClient httpClient = HttpClient.newHttpClient(); // HTTP клиент для отправки запросов
+    private final String token = serverService.getToken(); // Токен для аутентификации
+    private MainController mainController; // Главный контроллер
 
+    /**
+     * Устанавливает основной контроллер для переключения между окнами.
+     *
+     * @param mainController Основной контроллер
+     */
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
     @FXML
-    private StackPane tablePane;
+    private StackPane tablePane; // Панель таблицы
 
+    /**
+     * Переключение на главную страницу.
+     * Закрывает окно админ-панели и возвращает на главную страницу.
+     */
     @FXML
     private void switchToMain() {
         if (mainController != null) {
             mainController.switchToMain(); // Переключаемся на карту через MainController
-
-            // Закрываем админский Stage
             Stage stage = (Stage) tablePane.getScene().getWindow();
-            stage.close();
+            stage.close(); // Закрываем текущую панель
         } else {
             System.err.println("Ошибка: MainController не установлен.");
         }
     }
 
+    // Объявление полей для поиска и создания пользователей, а также таблиц для отображения данных
     @FXML
     private TextField searchUserField;
     @FXML
     private TextField searchIdField;
-
     @FXML
     private VBox createUserPane;
     @FXML
@@ -56,7 +68,6 @@ public class AdminController {
     private PasswordField passwordField;
     @FXML
     private ChoiceBox<String> roleChoiceBox;
-
     @FXML
     private TableView<UserDTO> usersTable;
     @FXML
@@ -69,7 +80,6 @@ public class AdminController {
     private TableColumn<UserDTO, String> emailColumn;
     @FXML
     private TableColumn<UserDTO, String> userTypeColumn;
-
     @FXML
     private TableView<ParkingSpotDTO> parkingSpotsTable;
     @FXML
@@ -78,7 +88,6 @@ public class AdminController {
     private TableColumn<ParkingSpotDTO, Integer> spotNumberColumn;
     @FXML
     private TableColumn<ParkingSpotDTO, String> tcNameColumn;
-
     @FXML
     private TableView<BookingDTO> bookingsTable;
     @FXML
@@ -97,7 +106,6 @@ public class AdminController {
     private TableColumn<BookingDTO, String> endTimeColumn;
     @FXML
     private TableColumn<BookingDTO, String> bookingStatusColumn;
-
     @FXML
     private TableView<TransactionDTO> transactionsTable;
     @FXML
@@ -113,6 +121,9 @@ public class AdminController {
     @FXML
     private TableColumn<TransactionDTO, String> transactionStatusColumn;
 
+    /**
+     * Инициализация контроллера, настройка таблиц и обработчиков событий.
+     */
     @FXML
     private void initialize() {
         // Настройка таблицы пользователей
@@ -145,11 +156,12 @@ public class AdminController {
         amountColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getAmount()));
         transactionStatusColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getStatus()));
 
+        // Обработчики для двойного щелчка на строках таблиц
         usersTable.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) { // Двойной щелчок
+            if (event.getClickCount() == 2) {
                 UserDTO selectedUser = usersTable.getSelectionModel().getSelectedItem();
                 if (selectedUser != null) {
-                    handleDeleteUser(selectedUser);
+                    handleDeleteUser(selectedUser); // Обработка удаления пользователя
                 }
             }
         });
@@ -158,7 +170,7 @@ public class AdminController {
             if (event.getClickCount() == 2) {
                 BookingDTO selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
                 if (selectedBooking != null) {
-                    handleChangeBookingStatus(selectedBooking);
+                    handleChangeBookingStatus(selectedBooking); // Изменение статуса бронирования
                 }
             }
         });
@@ -167,13 +179,17 @@ public class AdminController {
             if (event.getClickCount() == 2) {
                 TransactionDTO selectedTransaction = transactionsTable.getSelectionModel().getSelectedItem();
                 if (selectedTransaction != null) {
-                    handleChangeTransactionStatus(selectedTransaction);
+                    handleChangeTransactionStatus(selectedTransaction); // Изменение статуса транзакции
                 }
             }
         });
-
     }
 
+    /**
+     * Получение списка пользователей с сервера.
+     *
+     * @return Список пользователей
+     */
     public List<UserDTO> getUsers() {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -183,13 +199,19 @@ public class AdminController {
                     .build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(response.body(), new TypeReference<List<UserDTO>>() {});
+            return mapper.readValue(response.body(), new TypeReference<List<UserDTO>>() {
+            });
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyList();
         }
     }
 
+    /**
+     * Получение списка парковочных мест с сервера.
+     *
+     * @return Список парковочных мест
+     */
     public List<ParkingSpotDTO> getParkingSpots() {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -199,13 +221,19 @@ public class AdminController {
                     .build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(response.body(), new TypeReference<List<ParkingSpotDTO>>() {});
+            return mapper.readValue(response.body(), new TypeReference<List<ParkingSpotDTO>>() {
+            });
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyList();
         }
     }
 
+    /**
+     * Получение списка бронирований с сервера.
+     *
+     * @return Список бронирований
+     */
     public List<BookingDTO> getBookings() {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -215,13 +243,19 @@ public class AdminController {
                     .build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(response.body(), new TypeReference<List<BookingDTO>>() {});
+            return mapper.readValue(response.body(), new TypeReference<List<BookingDTO>>() {
+            });
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyList();
         }
     }
 
+    /**
+     * Получение списка транзакций с сервера.
+     *
+     * @return Список транзакций
+     */
     public List<TransactionDTO> getTransactions() {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -231,13 +265,20 @@ public class AdminController {
                     .build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(response.body(), new TypeReference<List<TransactionDTO>>() {});
+            return mapper.readValue(response.body(), new TypeReference<List<TransactionDTO>>() {
+            });
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyList();
         }
     }
 
+    /**
+     * Показывает только указанный узел (Node) и скрывает все остальные.
+     * Этот метод используется для переключения видимости между различными панелями управления.
+     *
+     * @param node Узел, который нужно отобразить.
+     */
     private void showOnly(Node node) {
         usersTable.setVisible(false);
         usersTable.setManaged(false);
@@ -254,6 +295,10 @@ public class AdminController {
         node.setManaged(true);
     }
 
+    /**
+     * Отображает таблицу пользователей и скрывает другие компоненты.
+     * Загружает список пользователей с сервера и отображает его в таблице.
+     */
     @FXML
     private void showUsersTable() {
         showOnly(usersTable);
@@ -263,11 +308,18 @@ public class AdminController {
         usersTable.getItems().setAll(users);
     }
 
+    /**
+     * Отображает форму для создания нового пользователя и скрывает другие компоненты.
+     */
     @FXML
     private void showCreateUserForm() {
         showOnly(createUserPane);
     }
 
+    /**
+     * Создаёт нового пользователя с заданными параметрами и добавляет его в систему.
+     * Если создание пользователя прошло успешно, обновляется таблица пользователей.
+     */
     @FXML
     private void createUser() {
         String username = usernameField.getText();
@@ -290,6 +342,10 @@ public class AdminController {
         }
     }
 
+    /**
+     * Отображает таблицу бронирований и скрывает другие компоненты.
+     * Загружает список бронирований с сервера и отображает его в таблице.
+     */
     @FXML
     private void showBookingsTable() {
         showOnly(bookingsTable);
@@ -297,6 +353,10 @@ public class AdminController {
         bookingsTable.getItems().setAll(bookings);
     }
 
+    /**
+     * Отображает таблицу парковочных мест и скрывает другие компоненты.
+     * Загружает список парковочных мест с сервера и отображает его в таблице.
+     */
     @FXML
     private void showParkingSpotsTable() {
         showOnly(parkingSpotsTable);
@@ -304,6 +364,10 @@ public class AdminController {
         parkingSpotsTable.getItems().setAll(spots);
     }
 
+    /**
+     * Отображает таблицу транзакций и скрывает другие компоненты.
+     * Загружает список транзакций с сервера и отображает его в таблице.
+     */
     @FXML
     private void showTransactionsTable() {
         showOnly(transactionsTable);
@@ -311,6 +375,12 @@ public class AdminController {
         transactionsTable.getItems().setAll(transactions);
     }
 
+    /**
+     * Обрабатывает удаление пользователя. Показывает подтверждение удаления и, если пользователь подтверждает,
+     * удаляет его из системы.
+     *
+     * @param user Пользователь, которого нужно удалить.
+     */
     private void handleDeleteUser(UserDTO user) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Подтверждение удаления");
@@ -329,6 +399,12 @@ public class AdminController {
         }
     }
 
+    /**
+     * Обрабатывает изменение статуса бронирования. Показывает диалог для выбора нового статуса
+     * и обновляет статус на сервере.
+     *
+     * @param booking Бронирование, статус которого нужно изменить.
+     */
     private void handleChangeBookingStatus(BookingDTO booking) {
         ChoiceDialog<String> dialog = new ChoiceDialog<>("RESERVED", "RESERVED", "IN_PROGRESS", "CANCELLED", "COMPLETED");
         dialog.setTitle("Изменение статуса");
@@ -349,6 +425,12 @@ public class AdminController {
         }
     }
 
+    /**
+     * Обрабатывает изменение статуса транзакции. Показывает диалог для выбора нового статуса
+     * и обновляет статус на сервере.
+     *
+     * @param transaction Транзакция, статус которой нужно изменить.
+     */
     private void handleChangeTransactionStatus(TransactionDTO transaction) {
         ChoiceDialog<String> dialog = new ChoiceDialog<>("APPROVED", "APPROVED", "IN_PROGRESS", "CANCELLED");
         dialog.setTitle("Изменение статуса");
@@ -369,6 +451,9 @@ public class AdminController {
         }
     }
 
+    /**
+     * Ищет пользователя по имени (username). Если пользователь найден, отображает его в таблице.
+     */
     @FXML
     private void searchUserByUsername() {
         String username = searchUserField.getText().trim();
@@ -385,6 +470,9 @@ public class AdminController {
         }
     }
 
+    /**
+     * Ищет бронирования по ID пользователя. Если бронирования найдены, отображает их в таблице.
+     */
     @FXML
     private void searchBookingsByUserId() {
         String userIdText = searchIdField.getText().trim();
@@ -406,6 +494,9 @@ public class AdminController {
         }
     }
 
+    /**
+     * Ищет транзакции по ID пользователя. Если транзакции найдены, отображает их в таблице.
+     */
     @FXML
     private void searchTransactionsByUserId() {
         String userIdText = searchIdField.getText().trim();
@@ -427,22 +518,28 @@ public class AdminController {
         }
     }
 
+    /**
+     * Показывает информацию об авторе приложения.
+     */
     @FXML
     private void showAboutAuthor() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Об авторе");
         alert.setHeaderText("Курсовая работа по JavaFX");
         alert.setContentText("""
-            Автор: Косарев Григорий
-            Группа: ПИ22-1
-            Почта: 222724@edu.fa.ru
-            Преподаватель: Свирина А.Г.
-            Версия приложения: 1.0
-            Все права защищены.
-            """);
+                Автор: Косарев Григорий
+                Группа: ПИ22-1
+                Почта: 222724@edu.fa.ru
+                Преподаватель: Свирина А.Г.
+                Версия приложения: 1.0
+                Все права защищены.
+                """);
         alert.showAndWait();
     }
 
+    /**
+     * Показывает статистику по парковочным местам для выбранных ТЦ.
+     */
     @FXML
     private void showStatistics() {
         Map<String, int[]> statistics = fetchParkingStatistics();
@@ -472,6 +569,11 @@ public class AdminController {
         alert.showAndWait();
     }
 
+    /**
+     * Получает статистику по парковочным местам с сервера.
+     *
+     * @return Карта с данными по ТЦ и их парковочным местам.
+     */
     private Map<String, int[]> fetchParkingStatistics() {
         Map<String, int[]> statistics = new HashMap<>();
         try {
@@ -484,12 +586,12 @@ public class AdminController {
 
             HttpResponse<String> response = serverService.getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             ObjectMapper objectMapper = new ObjectMapper();
-            statistics = objectMapper.readValue(response.body(), new TypeReference<>() {});
+            statistics = objectMapper.readValue(response.body(), new TypeReference<>() {
+            });
         } catch (Exception e) {
             e.printStackTrace();
             mainController.showError("Ошибка получения статистики с сервера.");
         }
         return statistics;
     }
-
 }

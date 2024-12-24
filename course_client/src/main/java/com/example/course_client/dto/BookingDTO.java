@@ -1,29 +1,66 @@
 package com.example.course_client.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 
 import java.util.Map;
 
+/**
+ * DTO для представления информации о бронировании.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BookingDTO {
+    /**
+     * Уникальный идентификатор бронирования.
+     */
     private Long id;
+
+    /**
+     * Идентификатор пользователя, связанного с бронированием.
+     */
     private Long userId;
+
+    /**
+     * Номер парковочного места.
+     */
     private int spotNumber;
+
+    /**
+     * Название торгового центра.
+     */
     private String tcName;
+
+    /**
+     * Время создания бронирования.
+     */
     private String bookingTime;
+
+    /**
+     * Время начала бронирования.
+     */
     private String startTime;
+
+    /**
+     * Время окончания бронирования.
+     */
     private String endTime;
+
+    /**
+     * Статус бронирования.
+     */
     private String status;
 
-    @JsonProperty("user") // Обработка вложенного объекта
+    /**
+     * Обрабатывает вложенный объект пользователя для извлечения идентификатора.
+     *
+     * @param user объект пользователя.
+     */
+    @JsonProperty("user")
     public void unpackUserId(Map<String, Object> user) {
         if (user != null && user.containsKey("id")) {
             this.userId = ((Number) user.get("id")).longValue();
         }
     }
 
-    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }

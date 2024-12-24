@@ -19,6 +19,10 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+/**
+ * Контроллер главного окна приложения.
+ * Отвечает за отображение карты, переход между окнами и взаимодействие с ТЦ.
+ */
 public class MainController {
 
     private final ServerService serverService = new ServerService();
@@ -54,60 +58,72 @@ public class MainController {
             tc2Info, tc3Info, backButton, selectTc1Button,
             selectTc2Button, selectTc3Button, toAdminPanelButton;
 
+    /**
+     * Инициализация контроллера.
+     * Скрывает карту при запуске, отображая форму логина.
+     */
     @FXML
     public void initialize() {
-        // Скрываем карту при запуске, чтобы сначала отображалась форма логина
         mapPane.setVisible(false);
     }
 
+    /**
+     * Переключение на окно админ-панели.
+     * Загружает FXML админ-панели и открывает его в новом окне.
+     */
     @FXML
     private void switchToAdminPanel() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/course_client/AdminPanel.fxml"));
             Parent adminRoot = loader.load();
 
-            // Получаем контроллер AdminController
             AdminController adminController = loader.getController();
-            adminController.setMainController(this); // Передаём ссылку на MainController
+            adminController.setMainController(this);
 
-            Stage adminStage = new Stage(); // Создаём новый Stage
+            Stage adminStage = new Stage();
             adminStage.setTitle("Админ-панель");
             adminStage.setScene(new Scene(adminRoot, 800, 600));
             adminStage.show();
             switchToMain();
-
-            // Сохраняем ссылку на админский Stage для дальнейшего управления
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
+    /**
+     * Обработчик клика по кнопке ТЦ "Дискавери".
+     * Меняет фон и отображает информацию о ТЦ.
+     */
     @FXML
     private void handleTc1Click() {
         changeBackground("/images/discovery.jpg");
         hideTcButtons();
         tc1Info.setVisible(true);
-        selectTc1Button.setVisible(true);  // Показать кнопку "Выбрать этот ТЦ"
+        selectTc1Button.setVisible(true);
         backButton.setVisible(true);
     }
 
+    /**
+     * Аналогично {@link #handleTc1Click()}, но для ТЦ "Водный".
+     */
     @FXML
     private void handleTc2Click() {
         changeBackground("/images/vodniy.jpg");
         hideTcButtons();
         tc2Info.setVisible(true);
-        selectTc2Button.setVisible(true);  // Показать кнопку "Выбрать этот ТЦ"
+        selectTc2Button.setVisible(true);
         backButton.setVisible(true);
     }
 
+    /**
+     * Аналогично {@link #handleTc1Click()}, но для ТЦ "Авиапарк".
+     */
     @FXML
     private void handleTc3Click() {
         changeBackground("/images/aviapark.jpg");
         hideTcButtons();
         tc3Info.setVisible(true);
-        selectTc3Button.setVisible(true);  // Показать кнопку "Выбрать этот ТЦ"
+        selectTc3Button.setVisible(true);
         backButton.setVisible(true);
     }
 
@@ -117,21 +133,34 @@ public class MainController {
             new TCInfo("Авиапарк", "Ходынский бульвар, 4", 20, 120)
     );
 
+    /**
+     * Отображает информацию о ТЦ "Дискавери".
+     */
     @FXML
     private void showTc1Info() {
         showTcInfo("Дискавери");
     }
 
+    /**
+     * Аналогично {@link #showTc1Info()}, но для ТЦ "Водный".
+     */
     @FXML
     private void showTc2Info() {
         showTcInfo("Водный");
     }
 
+    /**
+     * Аналогично {@link #showTc1Info()}, но для ТЦ "Авиапарк".
+     */
     @FXML
     private void showTc3Info() {
         showTcInfo("Авиапарк");
     }
 
+    /**
+     * Сбрасывает отображение карты к начальному состоянию.
+     * Показывает кнопки всех ТЦ и скрывает дополнительную информацию.
+     */
     @FXML
     private void resetMap() {
         changeBackground("/images/map.jpg");
@@ -147,6 +176,11 @@ public class MainController {
         backButton.setVisible(false);
     }
 
+    /**
+     * Изменяет фон на заданное изображение.
+     *
+     * @param imagePath путь к изображению
+     */
     public void changeBackground(String imagePath) {
         Image image = new Image(getClass().getResource(imagePath).toExternalForm());
 
@@ -163,6 +197,11 @@ public class MainController {
         mapPane.setBackground(new Background(backgroundImage));
     }
 
+    /**
+     * Отображает информацию о заданном ТЦ.
+     *
+     * @param tcName имя ТЦ
+     */
     @FXML
     private void showTcInfo(String tcName) {
         TCInfo tcInfo = tcInfoList.stream()
@@ -185,28 +224,49 @@ public class MainController {
         }
     }
 
-
+    /**
+     * Скрывает кнопки всех ТЦ на карте.
+     */
     private void hideTcButtons() {
         tc1Button.setVisible(false);
         tc2Button.setVisible(false);
         tc3Button.setVisible(false);
     }
 
+    /**
+     * Обрабатывает выбор ТЦ "Дискавери".
+     * Открывает окно выбора парковочных мест для указанного торгового центра.
+     */
     @FXML
     private void handleSelectTc1() {
         openParkingWindow(2, 5, "Дискавери");
     }
 
+    /**
+     * Обрабатывает выбор ТЦ "Водный".
+     * Открывает окно выбора парковочных мест для указанного торгового центра.
+     */
     @FXML
     private void handleSelectTc2() {
         openParkingWindow(3, 4, "Водный");
     }
 
+    /**
+     * Обрабатывает выбор ТЦ "Авиапарк".
+     * Открывает окно выбора парковочных мест для указанного торгового центра.
+     */
     @FXML
     private void handleSelectTc3() {
         openParkingWindow(4, 5, "Авиапарк");
     }
 
+    /**
+     * Открывает окно выбора парковочных мест.
+     *
+     * @param rows    количество рядов на парковке
+     * @param columns количество мест в ряду
+     * @param tcName  название торгового центра
+     */
     private void openParkingWindow(int rows, int columns, String tcName) {
         Stage parkingStage = new Stage();
         parkingStage.setTitle("Парковка " + tcName);
@@ -243,6 +303,12 @@ public class MainController {
         parkingStage.show();
     }
 
+    /**
+     * Обновляет статус парковочных мест в реальном времени.
+     *
+     * @param spotButtons карта кнопок, отображающих парковочные места
+     * @param tcName      название торгового центра
+     */
     private void updateSpotStatuses(Map<Button, Integer> spotButtons, String tcName) {
         List<BookingDTO> bookings = serverService.fetchTodayBookings();
 
@@ -286,6 +352,13 @@ public class MainController {
         }
     }
 
+    /**
+     * Открывает окно выбора времени бронирования для указанного места.
+     *
+     * @param spotName  название парковочного места
+     * @param tcName    название торгового центра
+     * @param spotButton кнопка, представляющая парковочное место
+     */
     private void openTimeSelectionWindow(String spotName, String tcName, Button spotButton) {
         Stage timeStage = new Stage();
         timeStage.setTitle("Выбор времени для " + spotName);
@@ -359,13 +432,23 @@ public class MainController {
         timeStage.show();
     }
 
-    // Метод для форматирования времени в "HH:mm"
+    /**
+     * Форматирует общее количество минут в строку формата "HH:mm".
+     *
+     * @param totalMinutes общее количество минут
+     * @return отформатированное время в строке
+     */
     private String formatMinutes(int totalMinutes) {
         int hours = totalMinutes / 60;
         int minutes = totalMinutes % 60;
         return String.format("%02d:%02d", hours, minutes);
     }
 
+    /**
+     * Отображает окно ошибки с указанным сообщением.
+     *
+     * @param message сообщение ошибки
+     */
     public void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Ошибка");
@@ -374,6 +457,15 @@ public class MainController {
         alert.showAndWait();
     }
 
+    /**
+     * Открывает окно оплаты для выбранного парковочного места.
+     *
+     * @param spotId       Идентификатор места на парковке.
+     * @param spotButton   Кнопка, связанная с местом.
+     * @param tcName       Название торгового центра.
+     * @param startDateTime Начальное время бронирования.
+     * @param endDateTime   Конечное время бронирования.
+     */
     private void openPaymentWindow(String spotId, Button spotButton, String tcName, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         Long userId = serverService.getId(); // Фиксированный ID пользователя
         TCInfo tcInfo = tcInfoList.stream()
@@ -452,6 +544,14 @@ public class MainController {
         paymentStage.show();
     }
 
+    /**
+     * Проверяет корректность введённых данных банковской карты.
+     *
+     * @param cardNumber  Номер карты (16 цифр).
+     * @param expiryDate  Срок действия карты в формате "MM/YY".
+     * @param cvv         Код безопасности карты (CVV, 3 цифры).
+     * @return true, если данные корректны, иначе false.
+     */
     private boolean isValidCard(String cardNumber, String expiryDate, String cvv) {
         // Проверка длины номера карты
         if (cardNumber.length() != 16 || !cardNumber.matches("\\d+")) {
@@ -467,6 +567,11 @@ public class MainController {
         return cvv.length() == 3 && cvv.matches("\\d+");
     }
 
+    /**
+     * Показывает окно с успешным сообщением.
+     *
+     * @param message Сообщение, отображаемое в окне.
+     */
     public void showSuccess(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Успешно!");
@@ -476,6 +581,11 @@ public class MainController {
     }
 
     // ======= ЛОГИН =======
+    /**
+     * Обрабатывает событие входа в систему.
+     * Проверяет корректность введённых данных и переключает пользователя
+     * на соответствующую панель в зависимости от роли.
+     */
     @FXML
     private void handleLogin() {
         String username = loginUsernameField.getText();
@@ -501,6 +611,10 @@ public class MainController {
     }
 
     // ======= РЕГИСТРАЦИЯ =======
+    /**
+     * Обрабатывает событие регистрации нового пользователя.
+     * Проверяет корректность данных и регистрирует пользователя.
+     */
     @FXML
     private void handleRegister() {
         String username = registerUsernameField.getText();
@@ -527,6 +641,10 @@ public class MainController {
         }
     }
 
+    /**
+     * Обрабатывает выход из системы.
+     * Сбрасывает текущий токен и переключает на форму входа.
+     */
     @FXML
     private void handleLogout() {
         serverService.setToken(null); // Удаляем токен
@@ -535,6 +653,10 @@ public class MainController {
         switchToLogin();
     }
 
+    /**
+     * Переключает видимость панели на экран входа.
+     * Скрывает другие панели и очищает поля ввода логина.
+     */
     @FXML
     private void switchToLogin() {
         registerPane.setVisible(false);
@@ -543,13 +665,16 @@ public class MainController {
         loginPane.setManaged(true);
         mapPane.setVisible(false);
         mapPane.setManaged(false);
-        // Очищаем поля логина
         loginUsernameField.clear();
         loginPasswordField.clear();
         loginErrorLabel.setText("");
 
     }
 
+    /**
+     * Переключает видимость панели на экран регистрации.
+     * Скрывает экран входа.
+     */
     @FXML
     private void switchToRegister() {
         loginPane.setVisible(false);
@@ -558,6 +683,11 @@ public class MainController {
         registerPane.setManaged(true);
     }
 
+    /**
+     * Переключает на основной экран пользователя.
+     * Скрывает экраны входа и регистрации, сбрасывает карту и отображает
+     * кнопку перехода в админ-панель для администраторов.
+     */
     @FXML
     public void switchToMain() {
         resetMap();
@@ -572,6 +702,9 @@ public class MainController {
         }
     }
 
+    /**
+     * Отображает информационное окно с данными об авторе приложения.
+     */
     @FXML
     private void showAboutAuthor() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -587,5 +720,4 @@ public class MainController {
             """);
         alert.showAndWait();
     }
-
 }
